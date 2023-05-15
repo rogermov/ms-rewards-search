@@ -1,33 +1,58 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import random
+import time
 
-# lista de consultas de pesquisa
+# Inicializar o driver do Microsoft Edge
+edge_options = webdriver.EdgeOptions()
+edge_options.use_chromium = True
+edge_options.add_argument("start-maximized")
+driver = webdriver.Edge(options=edge_options)
+
+# Navegar até a página de login do Microsoft
+driver.get("https://login.live.com/")
+
+# Preencher o campo de email
+email_field = driver.find_element("loginfmt")
+email_field.send_keys("roger.bthe@gmail.com")
+email_field.send_keys(Keys.RETURN)
+
+time.sleep(2) # Aguardar um tempo para carregar a próxima página
+
+# Preencher o campo de senha
+password_field = driver.find_element("passwd")
+password_field.send_keys("T9c7x2j9.")
+password_field.send_keys(Keys.RETURN)
+
+time.sleep(5) # Aguardar um tempo para carregar a página após o login
+
+# Navegar até o Bing
+driver.get("https://www.bing.com/")
+
+# Adicionar cookie de login
+cookie = {'name': 'MSPAuth', 'value': driver.get_cookie('MSPAuth')['value'], 'domain': '.bing.com'}
+driver.add_cookie(cookie)
+
+# Lista de consultas de pesquisa
 search_queries = ['arroz', 'feijao', 'macarrao', 'batata', 'cenoura', 'tomate', 'cebola', 'alho', 'azeite', 'sal', 'pimenta', 'limao', 'laranja', 'abacaxi', 'morango', 'melancia', 'uva', 'kiwi', 'lima', 'abacate', 'banana', 'laranja', 'manga', 'pimentao', 'beterraba', 'berinjela', 'couve', 'alface', 'espinafre', 'salsinha']
 
-# cria uma instância do navegador Edge
-edge = webdriver.Edge()
-
-# abre a página do Bing
-edge.get('https://www.bing.com/')
-
-# realiza a pesquisa 30 vezes com consultas aleatórias
+# Realiza a pesquisa 30 vezes com consultas aleatórias
 for i in range(30):
-    # escolhe uma consulta aleatória da lista
+    # Escolhe uma consulta aleatória da lista
     search_query = random.choice(search_queries)
 
-    # encontra o campo de pesquisa e insere a consulta
-    search_box = edge.find_element('name', 'q')
+    # Encontra o campo de pesquisa e insere a consulta
+    search_box = driver.find_element('name', 'q')
     search_box.send_keys(search_query)
 
-    # envia o formulário de pesquisa
+    # Envia o formulário de pesquisa
     search_box.send_keys(Keys.RETURN)
 
-    # espera a página carregar
-    edge.implicitly_wait(10)
+    # Espera a página carregar
+    driver.implicitly_wait(10)
 
-    # volta para a página inicial do Bing
-    edge.get('https://www.bing.com/')
+    # Volta para a página inicial do Bing
+    driver.get('https://www.bing.com/')
 
-# fecha o navegador
-edge.quit()
+# Fecha o navegador
+driver.quit()
